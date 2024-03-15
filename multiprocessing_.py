@@ -2,24 +2,24 @@ import random
 import multiprocessing
 import time
 
-my_list = []
-min_number = 1
-max_number = 100
+arr = [random.randint(1, 100) for _ in range(1000000)]
 
 
-def generate_random_number():
-    global my_list
-    my_list.append(random.randint(min_number, max_number))
+def calculate_sum(start, end):
+    return sum(arr[start:end])
 
 
-# Создание списка процессов
-processes = []
+num_processes = 4  # Количество процессов для обработки
+chunk_size = len(arr) // num_processes  # Размер части массива для каждого процесса
 
 start_time = time.time()
 
-# Создание 10 процессов, каждый из которых генерирует случайное число
-for _ in range(10):
-    p = multiprocessing.Process(target=generate_random_number)
+# Создание списка процессов
+processes = []
+for i in range(num_processes):
+    start = i * chunk_size
+    end = (i + 1) * chunk_size if i < num_processes - 1 else len(arr)
+    p = multiprocessing.Process(target=calculate_sum, args=(start, end))
     processes.append(p)
     p.start()
 
@@ -29,6 +29,8 @@ for p in processes:
 
 end_time = time.time()
 
-print(f"Сгенерированный список: {my_list}")
-print(f"Сумма сгенерированного списка: {sum(my_list)}")
+total_sum = sum([p.exitcode for p in processes])
+
+print(f"Сумма элементов массива: {total_sum}")
 print(f"Затраченное время: {end_time - start_time} секунд(ы)")
+print(sum(arr))
