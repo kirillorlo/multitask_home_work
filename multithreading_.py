@@ -18,8 +18,8 @@ threads = []
 
 start_time = time.time()
 
-# Создание 10 потоков, каждый из которых генерирует случайное число
-for _ in range(1):
+# Создание 100 потоков, каждый из которых генерирует случайное число
+for _ in range(100):
     t = threading.Thread(target=generate_random_number)
     threads.append(t)
     t.start()
