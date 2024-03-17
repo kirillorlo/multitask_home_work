@@ -2,7 +2,12 @@ import random
 import asyncio
 import time
 
-arr = [random.randint(1, 100) for _ in range(1000000)]
+min_numb = 1
+max_numb = 10
+arr = []
+
+for i in range(1000000):
+    arr.append(random.randint(min_numb, max_numb))
 
 
 async def calculate_sum(start, end):
@@ -10,12 +15,11 @@ async def calculate_sum(start, end):
 
 
 async def main():
-    num_tasks = 4  # Количество задач
-    chunk_size = len(arr) // num_tasks  # Размер части массива для каждой задачи
+    num_tasks = 4
+    chunk_size = len(arr) // num_tasks
 
     start_time = time.time()
 
-    # Создание списка корутин
     coroutines = []
     for i in range(num_tasks):
         start = i * chunk_size
@@ -23,7 +27,6 @@ async def main():
         coro = calculate_sum(start, end)
         coroutines.append(coro)
 
-    # Запуск всех корутин
     results = await asyncio.gather(*coroutines)
 
     end_time = time.time()
@@ -31,8 +34,6 @@ async def main():
     total_sum = sum(results)
 
     print(f"Сумма элементов массива: {total_sum}")
-    print(f"Затраченное время: {end_time - start_time} секунд(ы)")
+    print(f"Затраченное время: {end_time - start_time} секунд")
 
-# Запуск асинхронной функции
 asyncio.run(main())
-print(sum(arr))

@@ -2,35 +2,36 @@ import random
 import multiprocessing
 import time
 
-arr = [random.randint(1, 100) for _ in range(1000000)]
+min_numb = 1
+max_numb = 10
+arr = []
+
+for i in range(1000000):
+    arr.append(random.randint(min_numb, max_numb))
 
 
 def calculate_sum(start, end):
     return sum(arr[start:end])
 
 
-num_processes = 4  # Количество процессов для обработки
-chunk_size = len(arr) // num_processes  # Размер части массива для каждого процесса
+if __name__ == '__main__':
+    num_processes = 4
+    chunk_size = len(arr) // num_processes
+    start_time = time.time()
 
-start_time = time.time()
+    processes = []
+    for i in range(num_processes):
+        start = i * chunk_size
+        end = (i + 1) * chunk_size if i < num_processes - 1 else len(arr)
+        p = multiprocessing.Process(target=calculate_sum, args=(start, end))
+        processes.append(p)
+        p.start()
 
-# Создание списка процессов
-processes = []
-for i in range(num_processes):
-    start = i * chunk_size
-    end = (i + 1) * chunk_size if i < num_processes - 1 else len(arr)
-    p = multiprocessing.Process(target=calculate_sum, args=(start, end))
-    processes.append(p)
-    p.start()
+    for p in processes:
+        p.join()
 
-# Ожидание завершения всех процессов
-for p in processes:
-    p.join()
+    end_time = time.time()
 
-end_time = time.time()
+    total_sum = sum([p.exitcode for p in processes])
 
-total_sum = sum([p.exitcode for p in processes])
-
-print(f"Сумма элементов массива: {total_sum}")
-print(f"Затраченное время: {end_time - start_time} секунд(ы)")
-print(sum(arr))
+    print(f"Затраченное время: {end_time - start_time} секунд")
